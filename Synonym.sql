@@ -34,6 +34,10 @@ CREATE TABLE purchasing.suppliers
     supplier_name NVARCHAR(100) NOT NULL
 );
 
+--switch to Bikestores database
+
+use Bikestores
+
 CREATE SYNONYM suppliers 
 FOR test.purchasing.suppliers;
 
