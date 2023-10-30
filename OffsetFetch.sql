@@ -26,6 +26,36 @@ select * from Trainees28 order by empid offset 5 rows FETCH NEXT 10 ROWS ONLY;
 
 select * from Trainees28 order by score desc offset 0 rows FETCH NEXT 10 ROWS ONLY; 
 
+--Pagination using while loop
+DECLARE @PageNumber AS INT
+            DECLARE @RowsOfPage AS INT
+        DECLARE @MaxTablePage  AS FLOAT 
+        SET @PageNumber=1
+        SET @RowsOfPage=4
+        SELECT @MaxTablePage = COUNT(*) FROM batch35
+        SET @MaxTablePage = CEILING(@MaxTablePage/@RowsOfPage)
+        WHILE @MaxTablePage >= @PageNumber
+        BEGIN
+         SELECT * FROM batch35
+        ORDER BY empname 
+        OFFSET (@PageNumber-1)*@RowsOfPage ROWS
+        FETCH NEXT @RowsOfPage ROWS ONLY
+        SET @PageNumber = @PageNumber + 1
+        END
+
+--Pagination using SP
+CREATE PROCEDURE usp_paging1
+@Start     INT=0, 
+@PageLimit INT=10
+AS
+BEGIN
+SELECT * FROM dbo.batch35
+ORDER  BY empname
+OFFSET @Start ROW
+FETCH NEXT @PageLimit ROWS ONLY
+END
+select * from batch35
+execute usp_paging 2,3
 
 --Work out
 --https://www.sqlservertutorial.net/sql-server-basics/sql-server-computed-columns/
