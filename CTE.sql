@@ -1,8 +1,8 @@
 /*The Common Table Expressions (CTE) were introduced into standard SQL in order to simplify various classes of SQL Queries for which a derived table was just unsuitable. 
 CTE was introduced in SQL Server 2005, the common table expression (CTE) is a temporary named result set that you can reference within a SELECT, INSERT, UPDATE, or DELETE statement. 
-You can also use a CTE in a CREATE a view, as part of the view’s SELECT query. In addition, as of SQL Server 2008, you can add a CTE to the new MERGE statement.
+You can also use a CTE in a CREATE a view, as part of the viewâ€™s SELECT query. In addition, as of SQL Server 2008, you can add a CTE to the new MERGE statement.
 
-Using the CTE –
+Using the CTE â€“
 We can define CTEs by adding a WITH clause directly before SELECT, INSERT, UPDATE, DELETE, or MERGE statement. 
 The WITH clause can include one or more CTEs seperated by commas. */
 
@@ -80,6 +80,41 @@ SELECT
     WHERE EmployeeID = cteReports.MgrID) AS Manager
 FROM cteReports 
 ORDER BY EmpLevel, MgrID 
+
+--Example
+select * from batch35
+
+CREATE PROCEDURE usp_paging
+@PageNumber INT=1, 
+@PageSize   INT=10
+AS 
+BEGIN
+WITH ctepaging 
+     AS (SELECT *,
+                Row_number() OVER(ORDER BY empname) AS rownum 
+         FROM dbo.batch35) 
+SELECT * 
+FROM   ctepaging 
+WHERE  rownum BETWEEN ( @PageNumber - 1 ) * @PageSize + 1 AND
+@PageNumber * @PageSize
+END
+
+execute usp_paging 4,4
+
+select * from batch35
+
+CREATE PROCEDURE usp_paging1
+@Start     INT=0, 
+@PageLimit INT=10
+AS
+BEGIN
+SELECT * FROM dbo.batch35
+ORDER  BY empname
+OFFSET @Start ROW
+FETCH NEXT @PageLimit ROWS ONLY
+END
+select * from batch35
+execute usp_paging 2,3
 
 /*Why do we need CTE?
 Like database views and derived tables, CTEs can make it easier to write and manage complex queries by making them more readable and simple. 
